@@ -2,8 +2,8 @@
 
 **Official implementation of the paper:**
 
-> **Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning and Satellite Imagery**  
-> *Remote Sensing Applications: Society and Environment (RSASE), 2025*  
+> **Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning and Satellite Imagery**
+> <!-- *Remote Sensing Applications: Society and Environment (RSASE), 2026 -->
 > **Authors:** Kuldip Singh Atwal, Dieter Pfoser, Daniel Rothbart (George Mason University)
 
 ---
