@@ -19,17 +19,13 @@ Unlike the original RaVAEn model designed for coarse-resolution disaster monitor
 
 ## Key Features
 
-- **Resolution-Adaptive Architecture**  
-  Incorporates *Frequency Decomposition*, *Multi-scale Dilated Convolutions*, and *BlurPool (anti-aliased downsampling)* to handle domain shifts between training data (10 m Sentinel-2) and inference data (3 m PlanetScope).
+- **Resolution-Adaptive Architecture:** Incorporates *Frequency Decomposition*, *Multi-scale Dilated Convolutions*, and *BlurPool (anti-aliased downsampling)* to handle domain shifts between training data (10 m Sentinel-2) and inference data (3 m PlanetScope).
 
-- **Unsupervised Learning**  
-  No labeled fire data required. The model learns nominal surface representations and flags deviations via latent-space cosine distance.
+- **Unsupervised Learning:** No labeled fire data required. The model learns nominal surface representations and flags deviations via latent-space cosine distance.
 
-- **Lightweight & Fast**  
-  Designed for operational near–real-time monitoring with end-to-end latency of approximately **24–30 hours**.
+- **Lightweight & Fast:** Designed for operational near–real-time monitoring with end-to-end latency of approximately **24–30 hours**.
 
-- **Data-Scarce Robustness**  
-  Validated on verified conflict incidents in Sudan (e.g., El Fasher, Gandahar Market) where ground truth is inaccessible.
+- **Data-Scarce Robustness:** Validated on verified conflict incidents in Sudan (e.g., El Fasher, Gandahar Market) where ground truth is inaccessible.
 
 ---
 
@@ -39,11 +35,9 @@ Unlike the original RaVAEn model designed for coarse-resolution disaster monitor
 
 The pipeline processes **4-band PlanetScope imagery** (Red, Green, Blue, NIR).
 
-- **Normalization:**  
-  Inputs are log-transformed to manage high dynamic range and scaled to the `[-1, 1]` interval using the 1st and 99th percentiles of the training data.
+- **Normalization:** Inputs are log-transformed to manage high dynamic range and scaled to the `[-1, 1]` interval using the 1st and 99th percentiles of the training data.
 
-- **Tiling:**  
-  Imagery is partitioned into non-overlapping **32 × 32 pixel tiles**.
+- **Tiling:** Imagery is partitioned into non-overlapping **32 × 32 pixel tiles**.
 
 ---
 
@@ -62,11 +56,9 @@ This design enables robustness to sensor resolution changes and texture fragment
 
 Inference compares **temporally paired tiles** (Pre-incident vs. Post-incident).
 
-- **Metric:**  
-  Cosine distance between latent vectors <b>z</b><sub>pre</sub> and <b>z</b><sub>post</sub>.
+- **Metric:** Cosine distance between latent vectors <b>z</b><sub>pre</sub> and <b>z</b><sub>post</sub>.
 
-- **Baseline:**  
-  A pixel-wise cosine distance method is included as a scientific control.
+- **Baseline:** A pixel-wise cosine distance method is included as a scientific control.
 
 ---
 
@@ -77,8 +69,7 @@ Inference compares **temporally paired tiles** (Pre-incident vs. Post-incident).
 The model is pre-trained on the **WorldFloods** dataset derived from Sentinel-2 imagery to learn diverse spectral and textural patterns.
 
 - **Source:** https://github.com/spaceml-org/ml4floods
-- **Adaptation:**  
-  Stochastic scale augmentation is applied during training to simulate the resolution shift from Sentinel-2 (10 m) to PlanetScope (3 m).
+- **Adaptation:** Stochastic scale augmentation is applied during training to simulate the resolution shift from Sentinel-2 (10 m) to PlanetScope (3 m).
 
 ---
 
@@ -86,11 +77,9 @@ The model is pre-trained on the **WorldFloods** dataset derived from Sentinel-2 
 
 Commercial **PlanetScope Level 3B Ortho Scene (Analytic, 4-band)** imagery is used for inference.
 
-- **Access:**  
-  Due to licensing restrictions, PlanetScope imagery for Sudan cannot be shared publicly. Researchers must obtain licenses directly from Planet Labs.
+- **Access:** Due to licensing restrictions, PlanetScope imagery for Sudan cannot be shared publicly. Researchers must obtain licenses directly from Planet Labs.
 
-- **Case Studies:**  
-  Metadata for the five Sudan conflict incidents (dates and AOIs) is provided in the manuscript.
+- **Case Studies:** Metadata for the five Sudan conflict incidents (dates and AOIs) is provided in the manuscript.
 
 ---
 
