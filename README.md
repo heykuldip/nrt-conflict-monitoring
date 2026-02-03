@@ -83,3 +83,22 @@ Commercial **PlanetScope Level 3B Ortho Scene (Analytic, 4-band)** imagery is us
 
 ---
 
+## Citation
+
+If you use this code, model architecture, or methodology in your research, please cite:
+
+```bibtex
+@article{atwal2026near,
+  title   = {Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning and Satellite Imagery},
+  author  = {Atwal, Kuldip Singh and Pfoser, Dieter and Rothbart, Daniel},
+  journal = {arXiv preprint arXiv:2512.07925},
+  year    = {2026}
+}
+```
+---
+
+## Acknowledgements
+
+This work was conducted as part of the Sudan Conflict Observatory (SCO). The researchers involved in the SCO project include the authors of this article as well as the following analysts: Moneim Adam, Mathieu Bere, Hind Fadul, Anusha Srirenganathanmalarvizhi, Zifu Wang, David Wong and Chaowei Yang.
+
+Computing resources were provided by the Office of Research Computing at George Mason University.
