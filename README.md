@@ -3,7 +3,7 @@
 
 **Official implementation of the paper:**
 
-> **Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning and Satellite Imagery**
+> **Near–Real-Time Conflict-Related Fire Detection in Sudan Using Unsupervised Deep Learning**
 > <!-- *Remote Sensing Applications: Society and Environment (RSASE), 2026 -->
 > **Authors:** Kuldip Singh Atwal, Dieter Pfoser, Daniel Rothbart (George Mason University)
 
@@ -89,7 +89,7 @@ If you use this code, model architecture, or methodology in your research, pleas
 
 ```bibtex
 @article{atwal2026near,
-  title   = {Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning and Satellite Imagery},
+  title   = {Near–Real-Time Conflict-Related Fire Detection in Sudan Using Unsupervised Deep Learning},
   author  = {Atwal, Kuldip Singh and Pfoser, Dieter and Rothbart, Daniel},
   journal = {arXiv preprint arXiv:2512.07925},
   year    = {2026}
