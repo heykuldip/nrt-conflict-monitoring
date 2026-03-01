@@ -11,7 +11,7 @@
 
 ## Abstract
 
-This repository contains the official implementation of the study **“Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning and Satellite Imagery.”** We adapt the **RaVAEn** framework to detect conflict-related fires and burn scars in Sudan using high-resolution satellite imagery with a **resolution-agnostic Variational Autoencoder (VAE)**.
+This repository contains the official implementation of the study **“Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning.”** We adapt the **RaVAEn** framework to detect conflict-related fires and burn scars in Sudan using high-resolution satellite imagery with a **resolution-agnostic Variational Autoencoder (VAE)**.
 
 Unlike the original RaVAEn model designed for coarse-resolution disaster monitoring on-board satellites, this version is optimized for **3 m resolution PlanetScope imagery**, enabling detection of small, fragmented fires in active war zones. The model employs a lightweight, unsupervised approach that learns generalized visual primitives from diverse land-cover data (WorldFloods) and identifies fire-affected areas as anomalies in the latent space. The system delivers actionable insights within **24–30 hours** of image acquisition.
 
@@ -58,7 +58,7 @@ Inference compares **temporally paired tiles** (Pre-incident vs. Post-incident).
 
 - **Metric:** Cosine distance between latent vectors <b>z</b><sub>pre</sub> and <b>z</b><sub>post</sub>.
 
-- **Baseline:** A pixel-wise cosine distance method is included as a scientific control.
+- **Baseline:** Pixel-wise cosine distance, CVA, and IR-MAD methods are included as scientific controls.
 
 ---
 
