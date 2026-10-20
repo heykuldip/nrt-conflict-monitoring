@@ -3,17 +3,17 @@
 
 **Official implementation of the paper:**
 
-> **Near–Real-Time Conflict-Related Fire Detection in Sudan Using Unsupervised Deep Learning**
-> <!-- *Remote Sensing Applications: Society and Environment (RSASE), 2026 -->
+> **Near-real-time conflict-related fire detection in Sudan using unsupervised deep learning**
+> *Science of Remote Sensing* 13 (2026) 100446. https://doi.org/10.1016/j.srs.2026.100446
 > **Authors:** Kuldip Singh Atwal, Dieter Pfoser, Daniel Rothbart (George Mason University)
 
 ---
 
 ## Abstract
 
-This repository contains the official implementation of the study **“Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning.”** We adapt the **RaVAEn** framework to detect conflict-related fires and burn scars in Sudan using high-resolution satellite imagery with a **resolution-agnostic Variational Autoencoder (VAE)**.
+This repository contains the official implementation of the study **“Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning.”** We adapted and retrained the **RaVAEn** framework to detect conflict-related fires and burn scars in Sudan using high-resolution satellite imagery with a **resolution-adaptive Variational Autoencoder (VAE)**.
 
-Unlike the original RaVAEn model designed for coarse-resolution disaster monitoring on-board satellites, this version is optimized for **3 m resolution PlanetScope imagery**, enabling detection of small, fragmented fires in active war zones. The model employs a lightweight, unsupervised approach that learns generalized visual primitives from diverse land-cover data (WorldFloods) and identifies fire-affected areas as anomalies in the latent space. The system delivers actionable insights within **24–30 hours** of image acquisition.
+Unlike the original RaVAEn model designed for coarse-resolution disaster monitoring on-board satellites, this version is optimized for **3 m resolution PlanetScope imagery**, enabling detection of small, fragmented fires in active war zones. The model employs a lightweight, unsupervised approach that learns generalized visual primitives from diverse land-cover data (WorldFloods) and identifies fire-affected areas as anomalies in the latent space. Under favorable observational conditions, the system delivers actionable insights within **24–30 hours** of image acquisition.
 
 ---
 
@@ -37,12 +37,14 @@ The pipeline processes **4-band PlanetScope imagery** (Red, Green, Blue, NIR).
 
 - **Normalization:** Inputs are log-transformed to manage high dynamic range and scaled to the `[-1, 1]` interval using the 1st and 99th percentiles of the training data.
 
+- **Spectral alignment:** PlanetScope bands are aligned to the Sentinel-2 reference with per-band gains and offsets from major-axis regression on near-coincident acquisitions.
+
 - **Tiling:** Imagery is partitioned into non-overlapping **32 × 32 pixel tiles**.
 
 ---
 
 ### 2. Model Architecture
-The core model, defined in `deeper_vae.py`, is a modified Variational Autoencoder that:
+The core model, `ResolutionAdaptiveVAE` in `src/models/ae_vae_models/deeper_vae.py`, is a modified Variational Autoencoder that:
 
 1. **Decomposes** inputs into low-frequency structural components and high-frequency texture components.
 2. **Encodes** features using multi-scale atrous (dilated) convolutions to capture context at varying resolutions.
@@ -56,9 +58,9 @@ This design enables robustness to sensor resolution changes and texture fragment
 
 Inference compares **temporally paired tiles** (Pre-incident vs. Post-incident).
 
-- **Metric:** Cosine distance between latent vectors <b>z</b><sub>pre</sub> and <b>z</b><sub>post</sub>.
+- **Metric:** Cosine distance between latent means <b>μ</b><sub>pre</sub> and <b>μ</b><sub>post</sub>.
 
-- **Baseline:** Pixel-wise cosine distance, CVA, and IR-MAD methods are included as scientific controls.
+- **Baseline:** Pixel-wise cosine distance, CVA, IR-MAD, dNDVI, and dBAI are included as scientific controls.
 
 ---
 
@@ -77,9 +79,35 @@ The model is pre-trained on the **WorldFloods** dataset derived from Sentinel-2 
 
 Commercial **PlanetScope Level 3B Ortho Scene (Analytic, 4-band)** imagery is used for inference.
 
-- **Access:** Due to licensing restrictions, PlanetScope imagery for Sudan cannot be shared publicly. Researchers must obtain licenses directly from Planet Labs.
+- **Access:** Due to licensing restrictions, PlanetScope imagery for Sudan cannot be shared publicly. Researchers need to obtain licenses directly from Planet Labs.
 
 - **Case Studies:** Metadata for the five Sudan conflict incidents (dates and AOIs) is provided in the manuscript.
+
+---
+
+## Usage
+
+Tested with Python 3.9, PyTorch 2.1, PyTorch Lightning 1.3.8, Hydra 1.1, rasterio 1.2, scikit-learn 1.5, SciPy 1.10, and pandas 1.4; training logs to Weights & Biases (`wandb`). Run all commands from the repository root. Training expects RaVAEn's `worldfloods_change_no_duplicates` dataset in `data/`.
+
+```bash
+# Normalisation parameters from the training data
+python -m scripts.compute_percentiles +dataset=alpha_multiscene +channels=rgb_nir +normalisation=raw \
+    +training=da +transform=no_augmentation +out=config/normalisation/log_percentiles.yaml
+
+# Training
+python -m scripts.train_model +dataset=alpha_multiscene +channels=rgb_nir +normalisation=log_percentiles \
+    +module=deeper_vae +training=da +transform=scale +project=conflict_monitoring
+
+# Change map between two co-registered scenes
+python -m scripts.infer CHECKPOINT.ckpt BEFORE.tif AFTER.tif change_map.tif \
+    --normalisation config/normalisation/log_percentiles.yaml [--alignment gains_offsets.yaml]
+
+# Evaluation for one site: metrics.csv (Tables 2–6, 8), effects.csv (Table 7), spearman.csv (Table 9)
+python -m scripts.evaluate POST.tif LABELS.tif results/SITE --pre PRE.tif [PRE.tif ...] \
+    --checkpoint CHECKPOINT.ckpt --normalisation config/normalisation/log_percentiles.yaml
+```
+
+The alignment file holds per-band `gains` and `offsets` from `src.data.alignment.fit_bands`. Several `--pre` scenes give the time-series configuration.
 
 ---
 
@@ -89,10 +117,13 @@ If you use this code, model architecture, or methodology in your research, pleas
 
 ```bibtex
 @article{atwal2026near,
-  title   = {Near–Real-Time Conflict-Related Fire Detection in Sudan Using Unsupervised Deep Learning},
+  title   = {Near-real-time conflict-related fire detection in Sudan using unsupervised deep learning},
   author  = {Atwal, Kuldip Singh and Pfoser, Dieter and Rothbart, Daniel},
-  journal = {arXiv preprint arXiv:2512.07925},
-  year    = {2026}
+  journal = {Science of Remote Sensing},
+  volume  = {13},
+  pages   = {100446},
+  year    = {2026},
+  doi     = {10.1016/j.srs.2026.100446}
 }
 ```
 ---
@@ -101,4 +132,4 @@ If you use this code, model architecture, or methodology in your research, pleas
 
 This work was conducted as part of the Sudan Conflict Observatory (SCO). The researchers involved in the SCO project include the authors of this article as well as the following analysts: Moneim Adam, Mathieu Bere, Hind Fadul, Anusha Srirenganathanmalarvizhi, Zifu Wang, David Wong and Chaowei Yang.
 
-Computing resources were provided by the Office of Research Computing at George Mason University.
+Computing resources were provided by the Office of Research Computing at George Mason University (https://orc.gmu.edu).

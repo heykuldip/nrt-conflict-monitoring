@@ -23,4 +23,3 @@ weight_decay: 0.0
 
 da_trans_cls: ${transform.train.transformer_cls}
 da_trans_args: ${transform.train.transform_list}
-
