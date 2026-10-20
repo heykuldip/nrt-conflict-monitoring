@@ -136,11 +136,9 @@ class TilingStrategyFullGrid(TilingStrategy):
         :param window_size: size of the window to open, as (width, height)
         """
         if isinstance(overlap, str):
-            #print("Input:", overlap, type(overlap))
-            overlap = overlap.replace("$","") # loads as string of ~ "[0, 0]$" 
+            overlap = overlap.replace("$", "")  # Loaded as a string such as "[0, 0]$"
             overlap = eval(overlap)
         self.overlap = overlap
-        ####print("Evaluated overlap as:", overlap, type(overlap))
         assert 0 <= overlap[0] < window_size[0]
         assert 0 <= overlap[1] < window_size[1]
 

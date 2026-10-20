@@ -128,7 +128,7 @@ class SingleFolderImageDataset(TiledDataset):
                  tiling_strategy_args: Dict = {}):
 
         super().__init__()
-        
+
         self.tifs = load_obj(filter_cls)(root_folder, folder_path, '*.tif',
                                          **filter_args)()
         if not self.tifs:

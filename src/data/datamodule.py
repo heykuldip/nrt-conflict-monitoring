@@ -8,7 +8,7 @@ from pytorch_lightning import LightningDataModule
 from torch.utils.data.dataset import Dataset
 
 from src.utils import load_obj
-from .utils import filter_pathlist, deep_compare
+from .utils import filter_pathlist
 
 
 class ParsedDataModule(LightningDataModule):
@@ -26,7 +26,6 @@ class ParsedDataModule(LightningDataModule):
 
         self.__dict__.update(cfg)
 
-        # Here so that I can cache it
         self.train_ds = self.create_dataset(self.root_folder, self.train,
                                             self.train.get('keep_separate',
                                                            False))
@@ -146,14 +145,6 @@ class ParsedDataModule(LightningDataModule):
     def test_dataloader(self):
         return self._make_dataloader(self.test_ds, self.test)
 
-    @staticmethod
-    def load(dataset_name, cache_dir):
-        savepath = Path(cache_dir) / 'datamodules' / dataset_name
-        if savepath.exists():
-            with open(savepath, 'rb') as file:
-                return pickle.load(file)
-        return None
-
     def save(self, cache_dir, overwrite=False):
         savepath = Path(cache_dir) / 'datamodules'
         savepath.mkdir(exist_ok=True, parents=True)
@@ -166,35 +157,9 @@ class ParsedDataModule(LightningDataModule):
             print(f'Datamodule {self.data_module_name} already in cache, not saving')
 
     @staticmethod
-    def load_or_create(cfg, cache_dir, prompt_for_input=True):
-        datamodule = ParsedDataModule.load(cfg['data_module_name'], cache_dir)
-        
-        # NEVER ASK FOR PROMPT, it caused too many mixups already... always recreate, save for logs sake
-
-        if datamodule is None:
-            datamodule = ParsedDataModule(cfg)
-            datamodule.save(cache_dir)
-        else:
-            datamodule = ParsedDataModule(cfg)
-            datamodule.save(cache_dir, overwrite=True)
-
-        """
-        if datamodule is not None and not prompt_for_input:
-            pass
-        elif datamodule is not None and prompt_for_input:
-            ans = ''
-            while not (ans.lower() == 'y' or ans.lower() == 'n'):
-                ans = input(f'Datamodule {cfg["data_module_name"]} found in cache. Do you want to use it? [y/n] ')
-
-            if ans.lower() == 'n':
-                print("Creating and saving new datamodule")
-                datamodule = ParsedDataModule(cfg)
-                datamodule.save(cache_dir, overwrite=True)
-        else:
-            datamodule = ParsedDataModule(cfg)
-            datamodule.save(cache_dir)
-
-        """
+    def load_or_create(cfg, cache_dir):
+        datamodule = ParsedDataModule(cfg)
+        datamodule.save(cache_dir, overwrite=True)
 
         datamodule.set_batch_sizes_and_n_workers(
             cfg['train']['batch_size'],

@@ -1,0 +1,9 @@
+---
+train:
+        transformer_cls: 'src.data.transformations.Transformer'
+
+        transform_list:
+            - 'src.data.transformations.RandomResample':
+                transf_args:
+                    max_zoom: 3.33
+                    p: 0.5

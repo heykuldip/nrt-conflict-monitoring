@@ -1,0 +1,3 @@
+---
+log_dir: "${hydra:runtime.cwd}/results"
+cache_dir: "${hydra:runtime.cwd}/cache"

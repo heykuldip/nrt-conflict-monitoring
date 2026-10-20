@@ -1,5 +1,5 @@
-import kornia
 from typing import List, Dict
+import numpy as np
 import torch
 from src.utils import load_obj
 
@@ -27,6 +27,7 @@ class MeanStdNormaliser:
     def __init__(self, image_names: List[str], mean: float = 0, std: float = 1,
                  **kwargs):
         super().__init__(image_names, **kwargs)
+        import kornia
         self.normalisation = kornia.augmentation.Normalize(mean=mean, std=std)
         self.denormaliser = kornia.augmentation.Denormalize(mean=mean, std=std)
 
@@ -38,13 +39,17 @@ class MeanStdNormaliser:
 
 
 class LogNormaliser(Normaliser):
+    def __init__(self, image_names: List[str], eps: float = 1.0, **kwargs):
+        super().__init__(image_names, **kwargs)
+        self.eps = eps
+
     def __call__(self, input):
-        input = input.log()
-        input[torch.isinf(input)] = float('nan')
-        return input
+        output = (input + self.eps).log()
+        output[input <= 0] = float('nan')  # nodata
+        return output
 
     def inverse(self, input):
-        return torch.exp(input)
+        return torch.exp(input) - self.eps
 
 
 class MinMaxNormaliser(Normaliser):
@@ -77,7 +82,7 @@ class ClipNormaliser(Normaliser):
         return input
 
     def inverse(self, input):
-        # Cannot properly invert! Lost information...
+        # Clipping is not invertible
         return input
 
 
@@ -153,30 +158,18 @@ class ListNormaliser(Normaliser):
         return input
 
     def inverse(self, input):
-        for n in self.normalisers[::-1]:  # going in reverse order
+        for n in self.normalisers[::-1]:
             input = n.inverse(input)
         return input
 
 
-if __name__ == '__main__':
-    import torch
-
-    input = (torch.randn(1, 8, 8) + 1) * 2
-    #image_names = [f"B{i}" for i in range(1)]
-
-    input1 = ClipNormaliser(0, 0.5)(input)
-    assert input1.max() <= 0.5, f'max = {input1.max()} should be less than 0.5'
-    assert input1.min() >= 0, f'min = {input1.min()} should be greater than 0'
-
-    input2 = RescaleNormaliser(0, 0.5, -1, 1)(input1)
-    assert input2.max() == 1, f'max = {input2.max()} should be equal to 1'
-    assert input2.min() == -1, f'min = {input2.min()} should be equal to -1'
-    input1_inversion = RescaleNormaliser(0, 0.5, -1, 1).invert(input2)
-    assert torch.all(input1_inversion == input1)
-
-    input3 = MinMaxNormaliser(0, 0.5, -1, 1)(input)
-    assert (input2 == input3).all(), "MinMaxNormaliser should be equal to sequence of Clip and Rescale"
-
-    input = (torch.randn(32, 3, 8, 8) + 1) * 2
-    normalisers = [ClipNormaliser(0, 0.5), ClipNormaliser(0, 0.2), ClipNormaliser(-0.1, 0.9)]
-    input4 = CompositeNormaliser(normalisers)(input)
+def percentile_spec(samples, channels, eps=1.0):
+    """Per band: log(x + eps), then P1 -> -1 and P99 -> +1."""
+    spec = {}
+    for name, values in zip(channels, samples):
+        p1, p99 = np.percentile(np.concatenate(values), [1, 99])
+        spec[name] = {'normaliser_cls': 'src.data.normalisers.ListNormaliser',
+                      'normaliser_args': {'normaliser_specs': [
+                          {'src.data.normalisers.LogNormaliser': {'eps': eps}},
+                          {'src.data.normalisers.RescaleNormaliser': {'x0': float(p1), 'x1': float(p99), 'y0': -1, 'y1': 1}}]}}
+    return {'normaliser_cls': 'src.data.normalisers.CompositeNormaliser', 'normaliser_args': {'normaliser_specs': spec}}

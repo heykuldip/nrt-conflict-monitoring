@@ -1,0 +1,10 @@
+---
+class: src.models.module.Module
+
+model_class: 'src.models.ae_vae_models.deeper_vae.ResolutionAdaptiveVAE'
+
+model_cls_args:
+  hidden_channels: [32, 64, 128, 256]
+  latent_dim: 128
+  extra_depth_on_scale: 2
+  visualisation_channels: ${channels.visualisation_channels}

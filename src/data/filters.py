@@ -37,5 +37,5 @@ class SliceFilter(NoFilter):
         self.f_slice = f_slice
 
     def __call__(self):
-        files = super().__call__()
+        files = super().__call__()  # noqa: F841
         return eval(f'files[{self.f_slice}]')

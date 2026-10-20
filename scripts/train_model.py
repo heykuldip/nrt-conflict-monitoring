@@ -30,8 +30,6 @@ def main(cfg):
     module = load_obj(cfg['module']['class'])(cfg['module'], cfg_train)
 
     log_name = cfg['module']['class'] + '/' + cfg['project']
-    #logger = loggers.WandbLogger(save_dir=cfg['log_dir'], name=log_name,
-    #                             project=cfg['project'], entity=cfg['entity'])
     logger = loggers.WandbLogger(save_dir=cfg['log_dir'], name=log_name, project=cfg['project'])
 
     callbacks = [
@@ -39,7 +37,7 @@ def main(cfg):
         LearningRateMonitor(),
         ModelCheckpoint(
             save_last=True,
-            save_top_k=-1,  # -1 keeps all, # << 0 keeps only last ....
+            save_top_k=-1,  # -1 keeps all checkpoints
             filename='epoch_{epoch:02d}-step_{step}',
             auto_insert_metric_name=False)
     ]
@@ -65,7 +63,6 @@ def main(cfg):
         reload_dataloaders_every_epoch=False,
         fast_dev_run=cfg_train['fast_dev_run'],
         resume_from_checkpoint=cfg_train.get('from_checkpoint'),
-        #check_val_every_n_epoch=cfg_train.get('check_val_every_n_epoch', 1) # line repeated?
     )
 
     trainer.tune(module, datamodule=data_module)

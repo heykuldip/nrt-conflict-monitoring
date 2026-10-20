@@ -1,43 +1,101 @@
-import pytorch_lightning as pl
 import torch
-import torch.optim as optim
+from torch import optim
+from src.utils import load_obj
+
+import pytorch_lightning as pl
+
 
 class Module(pl.LightningModule):
-    def __init__(self, model_cls, cfg: dict, train_cfg: dict, model_cls_args: dict):
+    def __init__(self, cfg: dict, train_cfg: dict) -> None:
         super().__init__()
+
+        # Data augmentation, if configured
+        da_trans_cls = train_cfg.pop("da_trans_cls", "src.data.transformations.NoTransformer")
+        da_trans_args = train_cfg.pop("da_trans_args", list())
+
         self.__dict__.update(cfg)
         self.__dict__.update(train_cfg)
+        self.save_hyperparameters(cfg)
 
-        self.model = model_cls(input_shape=self.input_shape, **model_cls_args)
+        model_cls = load_obj(self.model_class)
+        self.model = \
+            model_cls(input_shape=self.input_shape, **self.model_cls_args)
+
+        # Training only
+        self.da_transformer = load_obj(da_trans_cls)(*da_trans_args)
 
         if hasattr(self.model, '_visualise_step'):
-            self._visualise_step = lambda batch: self.model._visualise_step(batch[0])
+            self._visualise_step = \
+                lambda batch: self.model._visualise_step(batch[0])
             self._visualisation_labels = self.model._visualisation_labels
 
-    def forward(self, batch, **kwargs):
+    def forward(self, batch: torch.Tensor, **kwargs) -> torch.Tensor:
         return self.model(batch, **kwargs)
 
-    def training_step(self, batch, batch_idx):
-        batch = batch[0]
-        results = self.forward(batch)
-        loss = self.model.loss_function(
-            batch, results, M_N=batch.size(0) / self.len_train_ds
-        )
-        self.log_dict({f"train/{k}": v for k, v in loss.items()}, on_epoch=True)
-        return loss["loss"]
+    def log_losses(self, loss, where):
+        for k in loss.keys():
+            self.log(f'{where}/{k}', loss[k], on_epoch=True, logger=True)
 
-    def validation_step(self, batch, batch_idx):
+    def training_step(self, batch, batch_idx, optimizer_idx=0):
         batch = batch[0]
+        batch_size = batch.shape[0]
+
+        batch_da = self.da_transformer(batch)
+        results = self.forward(batch_da)
+
+        train_loss = self.model.loss_function(batch_da,
+                                              results,
+                                              M_N=batch_size/self.len_train_ds,
+                                              optimizer_idx=optimizer_idx,
+                                              batch_idx=batch_idx)
+
+        self.log_losses(train_loss, 'train')
+
+        return train_loss
+
+    def validation_step(self, batch, batch_idx, optimizer_idx=0):
+        batch = batch[0]
+        batch_size = batch.shape[0]
+
         results = self.forward(batch)
-        loss = self.model.loss_function(
-            batch, results, M_N=batch.size(0) / self.len_val_ds
-        )
-        self.log_dict({f"valid/{k}": v for k, v in loss.items()}, on_epoch=True)
+
+        val_loss = self.model.loss_function(batch,
+                                            results,
+                                            M_N=batch_size / self.len_val_ds,
+                                            optimizer_idx=optimizer_idx,
+                                            batch_idx=batch_idx)
+
+        self.log_losses(val_loss, 'valid')
+
+        return val_loss
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(
-            self.model.parameters(),
-            lr=self.lr,
-            weight_decay=self.weight_decay
-        )
-        return optimizer
+
+        optims = []
+        scheds = []
+
+        optimizer = optim.Adam(self.model.parameters(),
+                               lr=self.lr,
+                               weight_decay=self.weight_decay)
+        optims.append(optimizer)
+
+        if hasattr(self, 'scheduler_gamma'):
+            scheduler = \
+                optim.lr_scheduler.ExponentialLR(optims[0],
+                                                 gamma=self.scheduler_gamma)
+            scheds.append(scheduler)
+
+        if hasattr(self, 'lr2'):
+            optimizer2 = \
+                optim.Adam(getattr(self.model, self.submodel).parameters(),
+                           lr=self.lr2)
+            optims.append(optimizer2)
+
+        # Check if another scheduler is required for the second optimizer
+        if hasattr(self, 'scheduler_gamma2'):
+            scheduler2 = \
+                optim.lr_scheduler.ExponentialLR(optims[1],
+                                                 gamma=self.scheduler_gamma2)
+            scheds.append(scheduler2)
+
+        return optims, scheds

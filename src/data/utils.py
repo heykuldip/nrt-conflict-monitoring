@@ -63,7 +63,7 @@ def rasterio_open_multiple(
 
     images = [rasterio_open(image_path, window, fix_nans) for image_path in image_paths]
 
-    return np.concatenate(images) # TODO check
+    return np.concatenate(images)
 
 
 def rasterio_open_multiple_files(
@@ -84,7 +84,7 @@ def rasterio_open_multiple_files(
 
     images = [rasterio_open(image_path, window, channels, fix_nans) for image_path in image_paths]
 
-    return np.stack(images, axis=-1) # TODO check
+    return np.stack(images, axis=-1)
 
 def rasterio_get_sizes(image_path: str):
     with rasterio.open(image_path) as f:
@@ -102,7 +102,7 @@ def filter_pathlist(path_list, expr):
 
     elif expr[:2] == 'I:':
         fl = eval(f'path_list[{expr[2:]}]')
-        if type(fl) == str:
+        if isinstance(fl, str):
             return [fl]
         return fl
 
@@ -121,9 +121,9 @@ def filter_pathlist(path_list, expr):
 
 
 def deep_compare(sample_shape1, sample_shape2):
-    assert type(sample_shape1) == type(sample_shape2), \
+    assert type(sample_shape1) is type(sample_shape2), \
         f'{type(sample_shape1)} != {type(sample_shape2)}'
-           
+
 
     if sample_shape1 is None or sample_shape2 is None:
         return None
@@ -196,7 +196,7 @@ class SampleShape:
             return self.dim == other.dim
 
         return all([d1 == d2 for d1, d2 in zip(self.dim, other.dim)])
-    
+
     def merge(self, other):
         if self.is_leaf and not other.is_leaf:
             return SampleShape(())

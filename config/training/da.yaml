@@ -1,0 +1,26 @@
+---
+gpus: -1
+epochs: 200
+grad_batches: 1
+distr_backend: 'dp'
+use_amp: true  # true: 16-bit precision, false: 32-bit
+
+# The check_val_every_n_epoch and val_check_interval settings overlap, see:
+#     https://github.com/PyTorchLightning/pytorch-lightning/issues/6385
+val_check_interval: 0.2  # int: after that many batches; float: that fraction of an epoch
+check_val_every_n_epoch: 1
+
+fast_dev_run: false
+
+num_workers: 16
+
+batch_size_train: 128
+batch_size_valid: 128
+batch_size_test: 128
+
+lr: 0.001
+weight_decay: 0.0
+
+da_trans_cls: ${transform.train.transformer_cls}
+da_trans_args: ${transform.train.transform_list}
+

@@ -1,1 +1,1 @@
-# taken and adapted from https://github.com/AntixK/PyTorch-VAE
+# Adapted from https://github.com/AntixK/PyTorch-VAE
