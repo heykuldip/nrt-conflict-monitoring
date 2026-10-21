@@ -2,6 +2,8 @@
 
 [![tests](https://github.com/heykuldip/nrt-conflict-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/heykuldip/nrt-conflict-monitoring/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23522614.svg)](https://doi.org/10.5281/zenodo.23522614)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/heykuldip/nrt-conflict-monitoring)](https://github.com/heykuldip/nrt-conflict-monitoring/releases)
 
 ##### Based on the RaVAEn model: https://github.com/spaceml-org/RaVAEn
 
