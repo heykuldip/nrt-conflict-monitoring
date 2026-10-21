@@ -1,6 +1,9 @@
 # Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning
 ##### Based on the RaVAEn model: https://github.com/spaceml-org/RaVAEn
 
+[![tests](https://github.com/heykuldip/nrt-conflict-monitoring/actions/workflows/tests.yml/badge.svg)](https://github.com/heykuldip/nrt-conflict-monitoring/actions/workflows/tests.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23522614.svg)](https://doi.org/10.5281/zenodo.23522614)
+
 **Official implementation of the paper:**
 
 > **Near-real-time conflict-related fire detection in Sudan using unsupervised deep learning**
@@ -11,7 +14,7 @@
 
 ## Abstract
 
-This repository contains the official implementation of the study **“Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning.”** We adapted and retrained the **RaVAEn** framework to detect conflict-related fires and burn scars in Sudan using high-resolution satellite imagery with a **resolution-adaptive Variational Autoencoder (VAE)**.
+This repository contains the official implementation of the study **“Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning.”** We adapted and retrained the **RaVAEn** framework to detect conflict-related fires and burn scars in Sudan using high-resolution satellite imagery with a **resolution-adaptive Variational Autoencoder (VAE)**. It is archived on Zenodo as 10.5281/zenodo.23522615.
 
 Unlike the original RaVAEn model designed for coarse-resolution disaster monitoring on-board satellites, this version is optimized for **3 m resolution PlanetScope imagery**, enabling detection of small, fragmented fires in active war zones. The model employs a lightweight, unsupervised approach that learns generalized visual primitives from diverse land-cover data (WorldFloods) and identifies fire-affected areas as anomalies in the latent space. Under favorable observational conditions, the system delivers actionable insights within **24–30 hours** of image acquisition.
 
