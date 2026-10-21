@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the paper below."
+title: "nrt-conflict-monitoring"
+type: software
+authors:
+  - {family-names: Atwal, given-names: Kuldip Singh, orcid: https://orcid.org/0000-0002-9483-4668}
+  - {family-names: Pfoser, given-names: Dieter}
+  - {family-names: Rothbart, given-names: Daniel}
+license: GPL-3.0-only
+repository-code: "https://github.com/heykuldip/nrt-conflict-monitoring"
+doi: 10.5281/zenodo.23522614
+preferred-citation:
+  type: article
+  title: "Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning"
+  authors:
+  - {family-names: Atwal, given-names: Kuldip Singh, orcid: https://orcid.org/0000-0002-9483-4668}
+  - {family-names: Pfoser, given-names: Dieter}
+  - {family-names: Rothbart, given-names: Daniel}
+  year: 2026
+  doi: 10.1016/j.srs.2026.100446
+  url: "https://www.sciencedirect.com/science/article/pii/S2666017226000842"
