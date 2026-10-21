@@ -117,8 +117,6 @@ The alignment file holds per-band `gains` and `offsets` from `src.data.alignment
 
 ## Citation
 
-If you use this code, model architecture, or methodology in your research, please cite:
-
 ```bibtex
 @article{atwal2026near,
   title   = {Near-real-time conflict-related fire detection in Sudan using unsupervised deep learning},
@@ -130,6 +128,9 @@ If you use this code, model architecture, or methodology in your research, pleas
   doi     = {10.1016/j.srs.2026.100446}
 }
 ```
+
+For reproducibility, also cite the Zenodo DOI of the specific software version used in your analysis.
+
 ---
 
 ## Acknowledgements
