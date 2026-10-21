@@ -1,8 +1,9 @@
 # Near–Real-Time Conflict-Related Fire Detection Using Unsupervised Deep Learning
-##### Based on the RaVAEn model: https://github.com/spaceml-org/RaVAEn
 
 [![tests](https://github.com/heykuldip/nrt-conflict-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/heykuldip/nrt-conflict-monitoring/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23522614.svg)](https://doi.org/10.5281/zenodo.23522614)
+
+##### Based on the RaVAEn model: https://github.com/spaceml-org/RaVAEn
 
 **Official implementation of the paper:**
 
